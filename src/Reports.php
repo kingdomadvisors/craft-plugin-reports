@@ -1,29 +1,18 @@
 <?php
-/**
- * Reports plugin for Craft CMS 3.x
- *
- * Internal Reporting
- *
- * @link      https://selvin.co
- * @copyright Copyright (c) 2018 Selvin Ortiz
- */
-
 namespace kingdomadvisors\reports;
 
-use kingdomadvisors\reports\services\ReportsService as ReportsServiceService;
-use kingdomadvisors\reports\variables\ReportsVariable;
-use kingdomadvisors\reports\twigextensions\ReportsTwigExtension;
 use kingdomadvisors\reports\models\Settings;
-use kingdomadvisors\reports\elements\Report as ReportElement;
-use kingdomadvisors\reports\fields\Query as QueryField;
-use kingdomadvisors\reports\utilities\ReportsUtility as ReportsUtilityUtility;
-use kingdomadvisors\reports\widgets\ReportsWidget as ReportsWidgetWidget;
+use kingdomadvisors\reports\fields\QueryField;
+use kingdomadvisors\reports\elements\ReportElement;
+use kingdomadvisors\reports\services\ReportsService;
+use kingdomadvisors\reports\utilities\ReportsUtility;
+use kingdomadvisors\reports\widgets\ReportsWidget;
 
 use Craft;
 use craft\base\Plugin;
 use craft\services\Plugins;
 use craft\events\PluginEvent;
-use craft\console\Application as ConsoleApplication;
+use craft\console\Application as Console;
 use craft\web\UrlManager;
 use craft\services\Elements;
 use craft\services\Fields;
@@ -42,28 +31,14 @@ use yii\base\Event;
  * @package   Reports
  * @since     0.1.0
  *
- * @property  ReportsServiceService $reportsService
+ * @property  ReportsService $reportsService
  */
 class Reports extends Plugin
 {
-    // Static Properties
-    // =========================================================================
-
-    /**
-     * @var Reports
-     */
-    public static $plugin;
-
-    // Public Properties
-    // =========================================================================
-
     /**
      * @var string
      */
     public $schemaVersion = '0.1.0';
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * @inheritdoc
@@ -71,18 +46,18 @@ class Reports extends Plugin
     public function init()
     {
         parent::init();
-        self::$plugin = $this;
 
-        Craft::$app->view->registerTwigExtension(new ReportsTwigExtension());
+        Craft::$app->view->registerTwigExtension(new ReportsExtension());
 
-        if (Craft::$app instanceof ConsoleApplication) {
+        if (Craft::$app instanceof Console)
+        {
             $this->controllerNamespace = 'kingdomadvisors\reports\console\controllers';
         }
 
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
+            function(RegisterUrlRulesEvent $event) {
                 $event->rules['siteActionTrigger1'] = 'reports/default';
             }
         );
@@ -90,7 +65,7 @@ class Reports extends Plugin
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
+            function(RegisterUrlRulesEvent $event) {
                 $event->rules['cpActionTrigger1'] = 'reports/default/do-something';
             }
         );
@@ -98,7 +73,7 @@ class Reports extends Plugin
         Event::on(
             Elements::class,
             Elements::EVENT_REGISTER_ELEMENT_TYPES,
-            function (RegisterComponentTypesEvent $event) {
+            function(RegisterComponentTypesEvent $event) {
                 $event->types[] = ReportElement::class;
             }
         );
@@ -106,7 +81,7 @@ class Reports extends Plugin
         Event::on(
             Fields::class,
             Fields::EVENT_REGISTER_FIELD_TYPES,
-            function (RegisterComponentTypesEvent $event) {
+            function(RegisterComponentTypesEvent $event) {
                 $event->types[] = QueryField::class;
             }
         );
@@ -114,24 +89,26 @@ class Reports extends Plugin
         Event::on(
             Utilities::class,
             Utilities::EVENT_REGISTER_UTILITY_TYPES,
-            function (RegisterComponentTypesEvent $event) {
-                $event->types[] = ReportsUtilityUtility::class;
+            function(RegisterComponentTypesEvent $event) {
+                $event->types[] = ReportsUtility::class;
             }
         );
 
         Event::on(
             Dashboard::class,
             Dashboard::EVENT_REGISTER_WIDGET_TYPES,
-            function (RegisterComponentTypesEvent $event) {
-                $event->types[] = ReportsWidgetWidget::class;
+            function(RegisterComponentTypesEvent $event) {
+                $event->types[] = ReportsWidget::class;
             }
         );
 
         Event::on(
             CraftVariable::class,
             CraftVariable::EVENT_INIT,
-            function (Event $event) {
-                /** @var CraftVariable $variable */
+            function(Event $event) {
+                /**
+                 * @var CraftVariable $variable
+                 */
                 $variable = $event->sender;
                 $variable->set('reports', ReportsVariable::class);
             }
@@ -140,8 +117,17 @@ class Reports extends Plugin
         Event::on(
             Plugins::class,
             Plugins::EVENT_AFTER_INSTALL_PLUGIN,
-            function (PluginEvent $event) {
-                if ($event->plugin === $this) {
+            function(PluginEvent $event) {
+                if ($event->plugin === $this)
+                {
+                    Craft::info(
+                        Craft::t(
+                            'reports',
+                            '{name} plugin installed',
+                            ['name' => $this->name]
+                        ),
+                        __METHOD__
+                    );
                 }
             }
         );
@@ -156,9 +142,6 @@ class Reports extends Plugin
         );
     }
 
-    // Protected Methods
-    // =========================================================================
-
     /**
      * @inheritdoc
      */
@@ -172,11 +155,18 @@ class Reports extends Plugin
      */
     protected function settingsHtml(): string
     {
-        return Craft::$app->view->renderTemplate(
-            'reports/settings',
-            [
-                'settings' => $this->getSettings()
-            ]
-        );
+        try
+        {
+            return Craft::$app->view->renderTemplate(
+                'reports/settings',
+                [
+                    'settings' => $this->getSettings()
+                ]
+            );
+        }
+        catch (\Exception $e)
+        {
+            Craft::error(Craft::t('reports', $e->getMessage()), __METHOD__);
+        }
     }
 }

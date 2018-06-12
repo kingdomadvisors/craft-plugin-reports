@@ -25,7 +25,7 @@ use craft\helpers\Json;
  * @package   Reports
  * @since     0.1.0
  */
-class Query extends Field
+class QueryField extends Field
 {
     // Public Properties
     // =========================================================================

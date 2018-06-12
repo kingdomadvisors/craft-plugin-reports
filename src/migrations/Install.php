@@ -1,19 +1,7 @@
 <?php
-/**
- * Reports plugin for Craft CMS 3.x
- *
- * Internal Reporting
- *
- * @link      https://selvin.co
- * @copyright Copyright (c) 2018 Selvin Ortiz
- */
-
 namespace kingdomadvisors\reports\migrations;
 
-use kingdomadvisors\reports\Reports;
-
 use Craft;
-use craft\config\DbConfig;
 use craft\db\Migration;
 
 /**
@@ -23,72 +11,76 @@ use craft\db\Migration;
  */
 class Install extends Migration
 {
-    // Public Properties
-    // =========================================================================
+    const TABLE_GROUPS  = '{{%reports_groups}}';
+    const TABLE_REPORTS = '{{%reports_reports}}';
 
-    /**
-     * @var string The database driver to use
-     */
-    public $driver;
-
-    // Public Methods
-    // =========================================================================
-
-    /**
-     * @inheritdoc
-     */
     public function safeUp()
     {
-        $this->driver = Craft::$app->getConfig()->getDb()->driver;
-        if ($this->createTables()) {
+        if ($this->createTables())
+        {
             $this->createIndexes();
             $this->addForeignKeys();
-            // Refresh the db schema caches
+
             Craft::$app->db->schema->refresh();
+
             $this->insertDefaultData();
         }
 
         return true;
     }
 
-   /**
+    /**
      * @inheritdoc
      */
     public function safeDown()
     {
-        $this->driver = Craft::$app->getConfig()->getDb()->driver;
         $this->removeTables();
 
         return true;
     }
-
-    // Protected Methods
-    // =========================================================================
 
     /**
      * @return bool
      */
     protected function createTables()
     {
-        $tablesCreated = false;
+        $this->createTable(
+            self::TABLE_REPORTS,
+            [
+                'id'            => $this->primaryKey(),
+                'siteId'        => $this->integer()->notNull(),
 
-        $tableSchema = Craft::$app->db->schema->getTableSchema('{{%reports_report}}');
-        if ($tableSchema === null) {
-            $tablesCreated = true;
-            $this->createTable(
-                '{{%reports_report}}',
-                [
-                    'id' => $this->primaryKey(),
-                    'dateCreated' => $this->dateTime()->notNull(),
-                    'dateUpdated' => $this->dateTime()->notNull(),
-                    'uid' => $this->uid(),
-                    'siteId' => $this->integer()->notNull(),
-                    'some_field' => $this->string(255)->notNull()->defaultValue(''),
-                ]
-            );
-        }
+                // Fields
+                'name'          => $this->string()->notNull(),
+                'handle'        => $this->string()->notNull(),
+                'groupId'       => $this->integer(),
+                'dataSource'    => $this->string(50),
+                'description'   => $this->text(),
+                'settings'      => $this->text(),
+                'enabled'       => $this->boolean()->defaultValue(0),
 
-        return $tablesCreated;
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'uid'         => $this->uid(),
+            ]
+        );
+
+        $this->createTable(
+            self::TABLE_GROUPS,
+            [
+                'id'            => $this->primaryKey(),
+                'siteId'        => $this->integer()->notNull(),
+
+                // Fields
+                'name'          => $this->string()->notNull(),
+
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'uid'         => $this->uid(),
+            ]
+        );
+
+        return true;
     }
 
     /**
@@ -98,21 +90,25 @@ class Install extends Migration
     {
         $this->createIndex(
             $this->db->getIndexName(
-                '{{%reports_report}}',
-                'some_field',
+                self::TABLE_REPORTS,
+                'handle',
                 true
             ),
-            '{{%reports_report}}',
-            'some_field',
+            self::TABLE_REPORTS,
+            'handle',
             true
         );
-        // Additional commands depending on the db driver
-        switch ($this->driver) {
-            case DbConfig::DRIVER_MYSQL:
-                break;
-            case DbConfig::DRIVER_PGSQL:
-                break;
-        }
+
+        $this->createIndex(
+            $this->db->getIndexName(
+                self::TABLE_GROUPS,
+                'name',
+                true
+            ),
+            self::TABLE_GROUPS,
+            'name',
+            true
+        );
     }
 
     /**
@@ -121,10 +117,20 @@ class Install extends Migration
     protected function addForeignKeys()
     {
         $this->addForeignKey(
-            $this->db->getForeignKeyName('{{%reports_report}}', 'siteId'),
-            '{{%reports_report}}',
+            $this->db->getForeignKeyName(self::TABLE_REPORTS, 'siteId'),
+            self::TABLE_REPORTS,
             'siteId',
             '{{%sites}}',
+            'id',
+            'CASCADE',
+            'CASCADE'
+        );
+
+        $this->addForeignKey(
+            $this->db->getForeignKeyName(self::TABLE_REPORTS, 'groupId'),
+            self::TABLE_REPORTS,
+            'groupId',
+            self::TABLE_GROUPS,
             'id',
             'CASCADE',
             'CASCADE'
@@ -143,6 +149,7 @@ class Install extends Migration
      */
     protected function removeTables()
     {
-        $this->dropTableIfExists('{{%reports_report}}');
+        $this->dropTableIfExists(self::TABLE_GROUPS);
+        $this->dropTableIfExists(self::TABLE_REPORTS);
     }
 }

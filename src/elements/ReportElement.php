@@ -1,8 +1,6 @@
 <?php
 namespace kingdomadvisors\reports\elements;
 
-use kingdomadvisors\reports\Reports;
-
 use Craft;
 use craft\base\Element;
 use craft\elements\db\ElementQuery;
@@ -13,7 +11,7 @@ use craft\elements\db\ElementQueryInterface;
  * @package   Reports
  * @since     0.1.0
  */
-class Report extends Element
+class ReportElement extends Element
 {
     // Public Properties
     // =========================================================================
