@@ -4,6 +4,9 @@ namespace kingdomadvisors\reports\migrations;
 use Craft;
 use craft\db\Migration;
 
+use kingdomadvisors\reports\records\Group;
+use kingdomadvisors\reports\records\Report;
+
 /**
  * @author    Selvin Ortiz
  * @package   Reports
@@ -11,9 +14,6 @@ use craft\db\Migration;
  */
 class Install extends Migration
 {
-    const TABLE_GROUPS  = '{{%reports_groups}}';
-    const TABLE_REPORTS = '{{%reports_reports}}';
-
     public function safeUp()
     {
         if ($this->createTables())
@@ -45,19 +45,19 @@ class Install extends Migration
     protected function createTables()
     {
         $this->createTable(
-            self::TABLE_REPORTS,
+            Report::tableName(),
             [
-                'id'            => $this->primaryKey(),
-                'siteId'        => $this->integer()->notNull(),
+                'id'          => $this->primaryKey(),
+                'siteId'      => $this->integer()->notNull(),
 
                 // Fields
-                'name'          => $this->string()->notNull(),
-                'handle'        => $this->string()->notNull(),
-                'groupId'       => $this->integer(),
-                'dataSource'    => $this->string(50),
-                'description'   => $this->text(),
-                'settings'      => $this->text(),
-                'enabled'       => $this->boolean()->defaultValue(0),
+                'name'        => $this->string()->notNull(),
+                'handle'      => $this->string()->notNull(),
+                'groupId'     => $this->integer(),
+                'dataSource'  => $this->string(50),
+                'description' => $this->text(),
+                'settings'    => $this->text(),
+                'enabled'     => $this->boolean()->defaultValue(1),
 
                 'dateCreated' => $this->dateTime()->notNull(),
                 'dateUpdated' => $this->dateTime()->notNull(),
@@ -66,13 +66,13 @@ class Install extends Migration
         );
 
         $this->createTable(
-            self::TABLE_GROUPS,
+            Group::tableName(),
             [
-                'id'            => $this->primaryKey(),
-                'siteId'        => $this->integer()->notNull(),
+                'id'     => $this->primaryKey(),
+                'siteId' => $this->integer()->notNull(),
 
                 // Fields
-                'name'          => $this->string()->notNull(),
+                'name'   => $this->string()->notNull(),
 
                 'dateCreated' => $this->dateTime()->notNull(),
                 'dateUpdated' => $this->dateTime()->notNull(),
@@ -90,22 +90,22 @@ class Install extends Migration
     {
         $this->createIndex(
             $this->db->getIndexName(
-                self::TABLE_REPORTS,
+                Report::tableName(),
                 'handle',
                 true
             ),
-            self::TABLE_REPORTS,
+            Report::tableName(),
             'handle',
             true
         );
 
         $this->createIndex(
             $this->db->getIndexName(
-                self::TABLE_GROUPS,
+                Group::tableName(),
                 'name',
                 true
             ),
-            self::TABLE_GROUPS,
+            Group::tableName(),
             'name',
             true
         );
@@ -117,8 +117,8 @@ class Install extends Migration
     protected function addForeignKeys()
     {
         $this->addForeignKey(
-            $this->db->getForeignKeyName(self::TABLE_REPORTS, 'siteId'),
-            self::TABLE_REPORTS,
+            $this->db->getForeignKeyName(Report::tableName(), 'siteId'),
+            Report::tableName(),
             'siteId',
             '{{%sites}}',
             'id',
@@ -127,10 +127,10 @@ class Install extends Migration
         );
 
         $this->addForeignKey(
-            $this->db->getForeignKeyName(self::TABLE_REPORTS, 'groupId'),
-            self::TABLE_REPORTS,
+            $this->db->getForeignKeyName(Report::tableName(), 'groupId'),
+            Report::tableName(),
             'groupId',
-            self::TABLE_GROUPS,
+            Group::tableName(),
             'id',
             'CASCADE',
             'CASCADE'
@@ -142,6 +142,22 @@ class Install extends Migration
      */
     protected function insertDefaultData()
     {
+        $group         = new Group();
+        $group->name   = 'Default';
+        $group->siteId = Craft::$app->getSites()->currentSite->id;
+
+        if ($group->save())
+        {
+            $report              = new Report();
+            $report->name        = 'Example report powered by raw query.';
+            $report->handle      = 'example';
+            $report->siteId      = Craft::$app->getSites()->currentSite->id;
+            $report->groupId     = $group->id;
+            $report->description = '';
+            $report->dataSource  = 'crm';
+
+            $report->save();
+        }
     }
 
     /**
@@ -149,7 +165,7 @@ class Install extends Migration
      */
     protected function removeTables()
     {
-        $this->dropTableIfExists(self::TABLE_GROUPS);
-        $this->dropTableIfExists(self::TABLE_REPORTS);
+        $this->dropTableIfExists(Report::tableName());
+        $this->dropTableIfExists(Group::tableName());
     }
 }

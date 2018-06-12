@@ -1,18 +1,9 @@
 <?php
-/**
- * Reports plugin for Craft CMS 3.x
- *
- * Internal Reporting
- *
- * @link      https://selvin.co
- * @copyright Copyright (c) 2018 Selvin Ortiz
- */
-
 namespace kingdomadvisors\reports\records;
 
-use kingdomadvisors\reports\Reports;
+use yii\db\ActiveQueryInterface;
 
-use Craft;
+use craft\base\Element;
 use craft\db\ActiveRecord;
 
 /**
@@ -22,14 +13,13 @@ use craft\db\ActiveRecord;
  */
 class Report extends ActiveRecord
 {
-    // Public Static Methods
-    // =========================================================================
-
-    /**
-     * @inheritdoc
-     */
     public static function tableName()
     {
-        return '{{%reports_report}}';
+        return '{{%reports_reports}}';
+    }
+
+    public function getElement(): ActiveQueryInterface
+    {
+        return $this->hasOne(Element::class, ['id' => 'id']);
     }
 }
