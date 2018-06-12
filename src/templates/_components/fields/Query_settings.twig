@@ -1,0 +1,26 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Reports plugin for Craft CMS
+ *
+ * Query Field Settings
+ *
+ * @author    Selvin Ortiz
+ * @copyright Copyright (c) 2018 Selvin Ortiz
+ * @link      https://selvin.co
+ * @package   Reports
+ * @since     0.1.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("kingdomadvisors\\reports\\assetbundles\\reports\\ReportsAsset") %}
+
+{{ forms.textField({
+    label: 'Some Attribute',
+    instructions: 'Enter some attribute here.',
+    id: 'someAttribute',
+    name: 'someAttribute',
+    value: field['someAttribute']})
+}}

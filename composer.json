@@ -1,0 +1,46 @@
+{
+  "name": "kingdomadvisors/reports",
+  "description": "Internal Reporting",
+  "type": "craft-plugin",
+  "version": "0.1.0",
+  "keywords": [
+    "craft",
+    "cms",
+    "craftcms",
+    "craft-plugin",
+    "reports"
+  ],
+  "support": {
+    "docs": "https://github.com/kingdomadvisors/craft-plugin-reports/reports/blob/master/README.md",
+    "issues": "https://github.com/kingdomadvisors/craft-plugin-reports/reports/issues"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Selvin Ortiz",
+      "homepage": "https://selvin.co"
+    }
+  ],
+  "require": {
+    "craftcms/cms": "^3.0.0-RC1"
+  },
+  "autoload": {
+    "psr-4": {
+      "kingdomadvisors\\reports\\": "src/"
+    }
+  },
+  "platform": {
+    "php": "7.0"
+  },
+  "extra": {
+    "name": "Reports",
+    "handle": "reports",
+    "hasCpSettings": true,
+    "hasCpSection": true,
+    "changelogUrl": "https://raw.githubusercontent.com/kingdomadvisors/craft-plugin-reports/reports/master/CHANGELOG.md",
+    "components": {
+      "reportsService": "kingdomadvisors\\reports\\services\\ReportsService"
+    },
+    "class": "kingdomadvisors\\reports\\Reports"
+  }
+}

@@ -1,0 +1,20 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Reports plugin for Craft CMS
+ *
+ * ReportsWidget Widget Body
+ *
+ * @author    Selvin Ortiz
+ * @copyright Copyright (c) 2018 Selvin Ortiz
+ * @link      https://selvin.co
+ * @package   Reports
+ * @since     0.1.0
+ */
+#}
+
+{% set iconUrl = view.getAssetManager().getPublishedUrl('@kingdomadvisors/reports/assetbundles/reportswidgetwidget/dist', true) ~ '/img/ReportsWidget-icon.svg' %}
+
+<img src="{{ iconUrl }}" height="64" width="64" />
+
+<p>{{ message }}</p>

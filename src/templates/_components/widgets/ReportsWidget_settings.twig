@@ -1,0 +1,26 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Reports plugin for Craft CMS
+ *
+ * ReportsWidget Widget Settings
+ *
+ * @author    Selvin Ortiz
+ * @copyright Copyright (c) 2018 Selvin Ortiz
+ * @link      https://selvin.co
+ * @package   Reports
+ * @since     0.1.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("kingdomadvisors\\reports\\assetbundles\\reports\\ReportsAsset") %}
+
+{{ forms.textField({
+    label: 'Message',
+    instructions: 'Enter a message here.',
+    id: 'message',
+    name: 'message',
+    value: widget['message']})
+}}

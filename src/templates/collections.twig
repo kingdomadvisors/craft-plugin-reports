@@ -1,0 +1,52 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Reports plugin for Craft CMS 3.x
+ *
+ * Reports index.twig
+ *
+ * @author    Selvin Ortiz
+ * @copyright Copyright (c) 2018 Selvin Ortiz
+ * @link      https://selvin.co
+ * @package   Reports
+ * @since     0.1.0
+ */
+#}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("kingdomadvisors\\reports\\assetbundles\\reports\\ReportsAsset") %}
+{% do view.registerAssetBundle("kingdomadvisors\\reports\\assetbundles\\collectionscpsection\\CollectionsCPSectionAsset") %}
+
+{% set docsUrl = "https://github.com/kingdomadvisors/craft-plugin-reports/reports/blob/master/README.md" %}
+
+{% set title = "Reports | Collections" %}
+
+{% set pluginCpUrl = url('reports') %}
+
+{% set iconUrl = view.getAssetManager().getPublishedUrl('@kingdomadvisors/reports/assetbundles/collectionscpsection/dist', true) ~ '/img/Collections-icon.svg' %}
+
+{% set subnav = {
+    "sources": { label: "Sources"|t('reports'), url: url(pluginCpUrl ~ '/sources') },
+    "collections": { label: "Collections"|t('reports'), url: url(pluginCpUrl ~ '/collections') },
+
+} %}
+{% set selectedSubnavItem = 'collections' %}
+
+{% set crumbs = [
+    { label: "Reports", url: url(pluginCpUrl) },
+    { label: "Collections"|t('reports'), url: url(pluginCpUrl ~ '/collections') },
+] %}
+
+{% set extraPageHeaderHtml %}
+    <div class="buttons">
+        <a href="{{ pluginCpUrl }}" class="btn submit add icon">{{ "Click Me!"|t('reports') }}</a>
+    </div>
+{% endset %}
+
+{% set content %}
+    <h2>{{ "Collections CP Section body goes here"|t('reports') }}</h2>
+    <img src="{{ iconUrl }}" height="64" width="64" />
+    <p class="textline"></p>
+{% endset %}
