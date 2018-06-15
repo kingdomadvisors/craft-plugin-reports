@@ -153,8 +153,9 @@ class Install extends Migration
             $report->handle      = 'example';
             $report->siteId      = Craft::$app->getSites()->currentSite->id;
             $report->groupId     = $group->id;
-            $report->description = '';
             $report->dataSource  = 'crm';
+            $report->description = '';
+            $report->settings    = [];
 
             $report->save();
         }

@@ -10,6 +10,18 @@ use craft\db\ActiveRecord;
  * @author    Selvin Ortiz
  * @package   Reports
  * @since     0.1.0
+ *
+ * @property int       $id
+ * @property int       $siteId
+ * @property string    $name
+ * @property string    $handle
+ * @property int       $groupId
+ * @property string    $dataSource
+ * @property string    $description
+ * @property array     $settings
+ * @property \DateTime $dateCreated
+ * @property \DateTime $dateUpdated
+ * @property string    $uid
  */
 class Report extends ActiveRecord
 {

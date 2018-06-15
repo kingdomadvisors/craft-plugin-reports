@@ -1,18 +1,6 @@
 <?php
-/**
- * Reports plugin for Craft CMS 3.x
- *
- * Internal Reporting
- *
- * @link      https://selvin.co
- * @copyright Copyright (c) 2018 Selvin Ortiz
- */
-
 namespace kingdomadvisors\reports\models;
 
-use kingdomadvisors\reports\Reports;
-
-use Craft;
 use craft\base\Model;
 
 /**
@@ -22,16 +10,45 @@ use craft\base\Model;
  */
 class Report extends Model
 {
-    // Public Properties
-    // =========================================================================
+    /**
+     * @var int
+     */
+    public $id;
+
+    /**
+     * @var int
+     */
+    public $siteId;
+
+    /**
+     * @var int
+     */
+    public $groupId;
 
     /**
      * @var string
      */
-    public $someAttribute = 'Some Default';
+    public $name;
 
-    // Public Methods
-    // =========================================================================
+    /**
+     * @var string
+     */
+    public $handle;
+
+    /**
+     * @var string
+     */
+    public $dataSource;
+
+    /**
+     * @var string
+     */
+    public $description;
+
+    /**
+     * @var array
+     */
+    public $settings;
 
     /**
      * @inheritdoc
@@ -39,8 +56,7 @@ class Report extends Model
     public function rules()
     {
         return [
-            ['someAttribute', 'string'],
-            ['someAttribute', 'default', 'value' => 'Some Default'],
+            [['name, handle, dataSource'], 'string', 'required'],
         ];
     }
 }

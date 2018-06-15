@@ -1,6 +1,7 @@
 <?php
 namespace kingdomadvisors\reports;
 
+use kingdomadvisors\integrations\sproutreports\datasources\SproutReportCrmDataSource;
 use kingdomadvisors\reports\models\Settings;
 use kingdomadvisors\reports\fields\QueryField;
 use kingdomadvisors\reports\elements\ReportElement;
@@ -140,6 +141,13 @@ class Reports extends Plugin
             ),
             __METHOD__
         );
+    }
+
+    public function registerSproutReportsDataSources()
+    {
+        return [
+            new SproutReportCrmDataSource()
+        ];
     }
 
     /**
